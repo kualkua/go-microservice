@@ -1,0 +1,56 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "RabbitMQ: up",
+      "type": "shell",
+      "command": "docker compose up -d rabbitmq",
+      "problemMatcher": []
+    },
+    {
+      "label": "RabbitMQ: down",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run API Gateway",
+      "type": "shell",
+      "command": "go run ./cmd/api-gateway",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+          "MESSAGE_LIMIT": "100"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Payments Service",
+      "type": "shell",
+      "command": "go run ./cmd/payments-service",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+          "MESSAGE_LIMIT": "100"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Notification Service",
+      "type": "shell",
+      "command": "go run ./cmd/notification-service",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+          "MESSAGE_LIMIT": "100"
+        }
+      },
+      "problemMatcher": []
+    }
+  ]
+}

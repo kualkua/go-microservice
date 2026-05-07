@@ -1,0 +1,52 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API Gateway",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/api-gateway",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+        "MESSAGE_LIMIT": "100"
+      }
+    },
+    {
+      "name": "Payments Service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/payments-service",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+        "MESSAGE_LIMIT": "100"
+      }
+    },
+    {
+      "name": "Notification Service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/notification-service",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+        "MESSAGE_LIMIT": "100"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "All Services",
+      "configurations": [
+        "Payments Service",
+        "Notification Service",
+        "API Gateway"
+      ],
+      "stopAll": true
+    }
+  ]
+}
