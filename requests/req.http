@@ -1,0 +1,14 @@
+POST http://localhost:8080/payments
+Content-Type: application/json
+
+{
+  "user_id": "user-123",
+  "amount": 150.75,
+  "currency": "USD",
+  "idempotency_key": "txn-001"
+}
+
+> {%
+client.log("Status: " + response.status);
+client.log("Response body: " + JSON.stringify(response.body));
+%}
