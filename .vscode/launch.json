@@ -6,10 +6,13 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/cmd/api-gateway",
+      "program": "${workspaceFolder}/src/cmd/api-gateway",
       "cwd": "${workspaceFolder}",
       "env": {
+        "API_GATEWAY_ADDR": ":8080",
         "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+        "PAYMENTS_QUEUE": "payments",
+        "PAYMENT_PROCESSED_QUEUE": "payment_processed",
         "MESSAGE_LIMIT": "100"
       }
     },
@@ -18,10 +21,13 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/cmd/payments-service",
+      "program": "${workspaceFolder}/src/cmd/payments-service",
       "cwd": "${workspaceFolder}",
       "env": {
+        "API_GATEWAY_ADDR": ":8080",
         "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+        "PAYMENTS_QUEUE": "payments",
+        "PAYMENT_PROCESSED_QUEUE": "payment_processed",
         "MESSAGE_LIMIT": "100"
       }
     },
@@ -30,10 +36,13 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/cmd/notification-service",
+      "program": "${workspaceFolder}/src/cmd/notification-service",
       "cwd": "${workspaceFolder}",
       "env": {
+        "API_GATEWAY_ADDR": ":8080",
         "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+        "PAYMENTS_QUEUE": "payments",
+        "PAYMENT_PROCESSED_QUEUE": "payment_processed",
         "MESSAGE_LIMIT": "100"
       }
     }

@@ -2,4 +2,4 @@ module payment-microservices
 
 go 1.24.2
 
-require github.com/rabbitmq/amqp091-go v1.11.0 // indirect
+require github.com/rabbitmq/amqp091-go v1.11.0
