@@ -1,49 +1,77 @@
 # Payment Microservices
 
-An educational Go project for learning the basic structure of a microservice application and message-based communication through RabbitMQ.
+An educational Go project for learning layered Go application structure and message-based communication through RabbitMQ.
 
 The project demonstrates a simple payment flow:
 
-1. `api-gateway` receives an HTTP request to create a payment.
-2. The gateway publishes a message to the RabbitMQ `payments` queue.
-3. `payments-service` consumes the message from the `payments` queue, processes the payment, and publishes an event to the `payment_processed` queue.
-4. `notification-service` consumes the event from the `payment_processed` queue and logs the notification.
+1. The HTTP API receives a request to create a payment.
+2. The payment API use-case publishes a message to the RabbitMQ `payments` queue.
+3. The payment consumer reads from `payments`, processes the payment, and publishes a processed event to `payment_processed`.
+4. The notification consumer reads from `payment_processed` and logs the notification.
+
+The app is intentionally small, but the repository is organized around clean layer boundaries.
 
 ## Project Structure
 
 ```text
-docs/
-  architecture.md         # source of truth for repository architecture
-
 src/
   cmd/
-    api-gateway/          # HTTP API process
-    payments-service/     # payment consumer process
-    notification-service/ # notification consumer process
+    main-app/
+      main.go                 # dependency wiring and application startup
 
-  config/                 # process configuration
+  config/
+    config.go                 # process configuration: env and settings loading
 
   internal/
-    domain/               # models and interfaces, no infrastructure dependencies
-      payment/
-      notification/
+    adapters/                 # implementations of domain interfaces
+      rabbitmq/               # queue publishers and RabbitMQ connection
+      memory/                 # in-memory payment repository
+      logger/                 # notification logger adapter
 
-    app/                  # use-cases, depends only on domain
-      payment/
-      notification/
-
-    api/                  # transports: HTTP handlers and queue consumers
-      http/
+    api/                      # entrypoints: HTTP handlers and queue consumers
       consumer/
+        payment/
+          handler.go
+          transform.go
+        notification/
+          handler.go
+          transform.go
 
-    adapters/             # implementations of domain interfaces
-      rabbitmq/
-      memory/
-      logger/
+      http/
+        payment/
+          builder.go
+          handler.go
+          transform.go        # api <-> domain mapping
+
+      grpc/                   # place for future gRPC transports
+
+    app/                      # use-cases, depends only on domain
+      payment/
+        usecase.go
+      notification/
+        usecase.go
+
+    domain/                   # business models and interfaces
+      payment/
+        model.go
+        repository.go
+        port.go
+      notification/
+        port.go
+
+  pkg/                        # independent shared helpers, when needed
 
 requests/
-  req.http                # example HTTP request
+  req.http                    # example HTTP request
 ```
+
+## Layer Rules
+
+- `domain` contains business entities and interfaces only.
+- `app` contains use-cases and depends only on `domain`.
+- `api` contains transport-specific code: HTTP handlers, consumers, validation, and mapping.
+- `adapters` implement `domain` interfaces using concrete tools such as RabbitMQ, databases, loggers, or external clients.
+- `cmd/main-app` wires dependencies together and starts the application.
 
 ## Requirements
 
@@ -72,7 +100,7 @@ An example is available in `.env.example`.
 docker compose up -d
 ```
 
-The RabbitMQ Management UI will be available at:
+RabbitMQ Management UI:
 
 ```text
 http://localhost:15672
@@ -84,35 +112,17 @@ Login and password:
 guest / guest
 ```
 
-### 2. Start the API Gateway
-
-In a separate terminal:
+### 2. Start the Application
 
 ```bash
-go run ./src/cmd/api-gateway
+go run ./src/cmd/main-app
 ```
 
-The service listens for HTTP requests on port `8080`.
+The single `main-app` process starts:
 
-### 3. Start the Payments Service
-
-In a separate terminal:
-
-```bash
-go run ./src/cmd/payments-service
-```
-
-The service listens to the `payments` queue.
-
-### 4. Start the Notification Service
-
-In a separate terminal:
-
-```bash
-go run ./src/cmd/notification-service
-```
-
-The service listens to the `payment_processed` queue.
+- HTTP API on `:8080`;
+- payment consumer for the `payments` queue;
+- notification consumer for the `payment_processed` queue.
 
 ## Verification
 
@@ -138,18 +148,12 @@ Expected response:
 }
 ```
 
-After that:
-
-- `api-gateway` logs the received HTTP request;
-- `payments-service` logs the payment processing step;
-- `notification-service` logs the processed payment event.
+After that, the application logs the payment request, payment processing, and notification event.
 
 ## Build
 
 ```bash
-go build ./src/cmd/api-gateway
-go build ./src/cmd/payments-service
-go build ./src/cmd/notification-service
+go build ./src/cmd/main-app
 ```
 
 ## Tests
@@ -162,9 +166,8 @@ The project currently compiles, but there are no dedicated unit tests yet.
 
 ## Possible Improvements
 
-- add unit tests for payment validation;
-- replace the temporary repository with real storage;
+- add unit tests for payment validation and use-cases;
+- replace the temporary memory repository with real storage;
 - implement idempotency using `idempotency_key`;
-- add graceful shutdown;
 - add retry and dead-letter queue handling for message processing errors;
-- move ports and queue names to configuration.
+- add gRPC transport under `internal/api/grpc`.

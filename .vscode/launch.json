@@ -2,11 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "API Gateway",
+      "name": "Main App",
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/src/cmd/api-gateway",
+      "program": "${workspaceFolder}/src/cmd/main-app",
       "cwd": "${workspaceFolder}",
       "env": {
         "API_GATEWAY_ADDR": ":8080",
@@ -15,47 +15,6 @@
         "PAYMENT_PROCESSED_QUEUE": "payment_processed",
         "MESSAGE_LIMIT": "100"
       }
-    },
-    {
-      "name": "Payments Service",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "program": "${workspaceFolder}/src/cmd/payments-service",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "API_GATEWAY_ADDR": ":8080",
-        "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
-        "PAYMENTS_QUEUE": "payments",
-        "PAYMENT_PROCESSED_QUEUE": "payment_processed",
-        "MESSAGE_LIMIT": "100"
-      }
-    },
-    {
-      "name": "Notification Service",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "program": "${workspaceFolder}/src/cmd/notification-service",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "API_GATEWAY_ADDR": ":8080",
-        "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
-        "PAYMENTS_QUEUE": "payments",
-        "PAYMENT_PROCESSED_QUEUE": "payment_processed",
-        "MESSAGE_LIMIT": "100"
-      }
-    }
-  ],
-  "compounds": [
-    {
-      "name": "All Services",
-      "configurations": [
-        "Payments Service",
-        "Notification Service",
-        "API Gateway"
-      ],
-      "stopAll": true
     }
   ]
 }

@@ -14,39 +14,16 @@
       "problemMatcher": []
     },
     {
-      "label": "Run API Gateway",
+      "label": "Run Main App",
       "type": "shell",
-      "command": "go run ./cmd/api-gateway",
+      "command": "go run ./src/cmd/main-app",
       "options": {
         "cwd": "${workspaceFolder}",
         "env": {
+          "API_GATEWAY_ADDR": ":8080",
           "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
-          "MESSAGE_LIMIT": "100"
-        }
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Run Payments Service",
-      "type": "shell",
-      "command": "go run ./cmd/payments-service",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
-          "MESSAGE_LIMIT": "100"
-        }
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Run Notification Service",
-      "type": "shell",
-      "command": "go run ./cmd/notification-service",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "RABBITMQ_URL": "amqp://guest:guest@localhost:5672/",
+          "PAYMENTS_QUEUE": "payments",
+          "PAYMENT_PROCESSED_QUEUE": "payment_processed",
           "MESSAGE_LIMIT": "100"
         }
       },
