@@ -1,1 +1,9 @@
 src/.env
+
+# Go build / debug артефакты
+__debug_bin*
+*.exe
+*.test
+*.out
+go-microservice
+main-app
